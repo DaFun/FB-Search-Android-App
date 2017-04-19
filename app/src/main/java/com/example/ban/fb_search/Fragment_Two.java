@@ -4,32 +4,20 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-//import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
-import android.os.AsyncTask;
-import android.view.inputmethod.InputMethodManager;
-
-import com.example.ban.fb_search.utilities.NetworkUtils;
-
-import java.io.IOException;
-import java.net.URL;
 
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link FirstFragment.OnFragmentInteractionListener} interface
+ * {@link Fragment_Two.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link FirstFragment#newInstance} factory method to
+ * Use the {@link Fragment_Two#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FirstFragment extends Fragment {
+public class Fragment_Two extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -39,12 +27,9 @@ public class FirstFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    private EditText mSearchBoxEditText;
-    private TextView mSearchResultsTextView;
-
     private OnFragmentInteractionListener mListener;
 
-    public FirstFragment() {
+    public Fragment_Two() {
         // Required empty public constructor
     }
 
@@ -54,11 +39,11 @@ public class FirstFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment FirstFragment.
+     * @return A new instance of fragment Fragment_Two.
      */
     // TODO: Rename and change types and number of parameters
-    public static FirstFragment newInstance(String param1, String param2) {
-        FirstFragment fragment = new FirstFragment();
+    public static Fragment_Two newInstance(String param1, String param2) {
+        Fragment_Two fragment = new Fragment_Two();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -73,72 +58,13 @@ public class FirstFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-
-    }
-
-    private void makeSearchQuery() {
-        String query = mSearchBoxEditText.getText().toString();
-        URL searchUrl = NetworkUtils.buildUrl(query, "user");
-
-        //mUrlDisplayTextView.setText(githubSearchUrl.toString());
-        new queryTask().execute(searchUrl);
-    }
-
-    public class queryTask extends AsyncTask<URL, Void, String> {
-
-        @Override
-        protected String doInBackground(URL... params) {
-            URL searchUrl = params[0];
-            String searchResults = null;
-            try {
-                searchResults = NetworkUtils.getResponseFromHttpUrl(searchUrl);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return searchResults;
-        }
-
-        @Override
-        protected void onPostExecute(String searchResults) {
-            if (searchResults != null && !searchResults.equals("")) {
-                mSearchResultsTextView.setText(searchResults);
-            }
-        }
-    }
-
-    public void hideKeyboard(View view) {
-        InputMethodManager inputMethodManager =(InputMethodManager)getActivity().getSystemService(getActivity().INPUT_METHOD_SERVICE);
-        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_first, container, false);
-        mSearchBoxEditText = (EditText) view.findViewById(R.id.et_search_box);
-        mSearchResultsTextView = (TextView) view.findViewById(R.id.tv_github_search_results_json);
-
-        final Button button = (Button) view.findViewById(R.id.bt_search);
-        button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                makeSearchQuery();
-                FragmentManager fm = getActivity().getSupportFragmentManager();
-                Fragment fragment = new SecondFragment();
-                fm.beginTransaction().replace(R.id.flContent, fragment).commit();
-            }
-        });
-
-        mSearchBoxEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    hideKeyboard(v);
-                }
-            }
-        });
-
-        return view;
+        return inflater.inflate(R.layout.fragment_two, container, false);
     }
 
     // TODO: Rename method, update argument and hook method into UI event
