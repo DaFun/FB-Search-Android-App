@@ -3,6 +3,8 @@ package com.example.ban.fb_search;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +18,9 @@ public class PageFragment extends Fragment {
     public static final String ARG_PAGE = "ARG_PAGE";
 
     private int mPage;
+    private RVAdapter mAdapter;
+    private RecyclerView mNumbersList;
+    private static final int NUM_LIST_ITEMS = 100;
 
     public static PageFragment newInstance(int page) {
         Bundle args = new Bundle();
@@ -35,8 +40,14 @@ public class PageFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_page, container, false);
-        TextView textView = (TextView) view;
-        textView.setText("Fragment #" + mPage);
+
+        mNumbersList = (RecyclerView) view.findViewById(R.id.rv_numbers);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        mNumbersList.setLayoutManager(layoutManager);
+        mNumbersList.setHasFixedSize(true);
+        mAdapter = new RVAdapter(NUM_LIST_ITEMS);
+
+        mNumbersList.setAdapter(mAdapter);
         return view;
     }
 }

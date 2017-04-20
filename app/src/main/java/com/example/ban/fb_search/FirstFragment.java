@@ -19,7 +19,7 @@ import com.example.ban.fb_search.utilities.NetworkUtils;
 
 import java.io.IOException;
 import java.net.URL;
-
+import android.support.v4.app.FragmentTransaction;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -102,6 +102,13 @@ public class FirstFragment extends Fragment {
         protected void onPostExecute(String searchResults) {
             if (searchResults != null && !searchResults.equals("")) {
                 mSearchResultsTextView.setText(searchResults);
+                FragmentManager fm = getActivity().getSupportFragmentManager();
+                Fragment fragment = new SecondFragment();
+                FragmentTransaction transaction = fm.beginTransaction();
+                transaction.replace(R.id.flContent, fragment);
+                transaction.addToBackStack(null);
+
+                transaction.commit();
             }
         }
     }
@@ -123,9 +130,6 @@ public class FirstFragment extends Fragment {
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 makeSearchQuery();
-                FragmentManager fm = getActivity().getSupportFragmentManager();
-                Fragment fragment = new SecondFragment();
-                fm.beginTransaction().replace(R.id.flContent, fragment).commit();
             }
         });
 

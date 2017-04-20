@@ -118,9 +118,8 @@ public class SecondFragment extends Fragment {
 
         @Override
         public Fragment getItem(int position) {
-
-            //return PageFragment.newInstance(position + 1);
-            return mFragmentList.get(position);
+            return PageFragment.newInstance(position + 1);
+            //return mFragmentList.get(position);
         }
 
         public void addFrag(Fragment fragment, String title) {
