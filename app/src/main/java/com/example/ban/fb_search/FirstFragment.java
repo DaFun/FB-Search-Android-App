@@ -1,11 +1,9 @@
 package com.example.ban.fb_search;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-//import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +18,9 @@ import com.example.ban.fb_search.utilities.NetworkUtils;
 import java.io.IOException;
 import java.net.URL;
 import android.support.v4.app.FragmentTransaction;
+
+import org.json.JSONObject;
+import org.json.JSONException;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -78,20 +79,29 @@ public class FirstFragment extends Fragment {
 
     private void makeSearchQuery() {
         String query = mSearchBoxEditText.getText().toString();
-        URL searchUrl = NetworkUtils.buildUrl(query, "user");
+        URL userUrl = NetworkUtils.buildUrl(query, "user");
+        URL pageUrl = NetworkUtils.buildUrl(query, "page");
+        URL eventUrl = NetworkUtils.buildUrl(query, "event");
+        URL placeUrl = NetworkUtils.buildUrl(query, "place");
+        URL groupUrl = NetworkUtils.buildUrl(query, "group");
+
 
         //mUrlDisplayTextView.setText(githubSearchUrl.toString());
-        new queryTask().execute(searchUrl);
+        new queryTask().execute(userUrl, pageUrl, eventUrl, placeUrl, groupUrl);
     }
 
-    public class queryTask extends AsyncTask<URL, Void, String> {
+    public class queryTask extends AsyncTask<URL, Void, String[]> {
 
         @Override
-        protected String doInBackground(URL... params) {
-            URL searchUrl = params[0];
-            String searchResults = null;
+        protected String[] doInBackground(URL... urls) {
+            //URL searchUrl = urls[0];
+            String[] searchResults = new String[5];
             try {
-                searchResults = NetworkUtils.getResponseFromHttpUrl(searchUrl);
+                searchResults[0] = NetworkUtils.getResponseFromHttpUrl(urls[0]);
+                searchResults[1] = NetworkUtils.getResponseFromHttpUrl(urls[1]);
+                searchResults[2] = NetworkUtils.getResponseFromHttpUrl(urls[2]);
+                searchResults[3] = NetworkUtils.getResponseFromHttpUrl(urls[3]);
+                searchResults[4] = NetworkUtils.getResponseFromHttpUrl(urls[4]);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -99,16 +109,11 @@ public class FirstFragment extends Fragment {
         }
 
         @Override
-        protected void onPostExecute(String searchResults) {
+        protected void onPostExecute(String[] searchResults) {
             if (searchResults != null && !searchResults.equals("")) {
-                mSearchResultsTextView.setText(searchResults);
-                FragmentManager fm = getActivity().getSupportFragmentManager();
-                Fragment fragment = new SecondFragment();
-                FragmentTransaction transaction = fm.beginTransaction();
-                transaction.replace(R.id.flContent, fragment);
-                transaction.addToBackStack(null);
+                mSearchResultsTextView.setText(searchResults[0]);
 
-                transaction.commit();
+                mListener.onDataReceived(searchResults);
             }
         }
     }
@@ -146,13 +151,13 @@ public class FirstFragment extends Fragment {
     }
 
     // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
+    /*public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
         }
-    }
+    }*/
 
-    /*@Override
+    @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         if (context instanceof OnFragmentInteractionListener) {
@@ -161,7 +166,7 @@ public class FirstFragment extends Fragment {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
         }
-    }*/
+    }
 
     @Override
     public void onDetach() {
@@ -181,6 +186,6 @@ public class FirstFragment extends Fragment {
      */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+        public void onDataReceived(String[] data);
     }
 }

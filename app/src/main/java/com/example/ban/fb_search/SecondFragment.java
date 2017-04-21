@@ -1,6 +1,5 @@
 package com.example.ban.fb_search;
 
-import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -11,12 +10,11 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentManager;
-/*import android.graphics.drawable.Drawable;
-import android.support.v4.content.ContextCompat;
-import android.text.SpannableString;
-import android.text.style.ImageSpan;
-import android.text.Spannable;*/
 import android.widget.TextView;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 /**
@@ -30,16 +28,22 @@ import java.util.ArrayList;
 public class SecondFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    static final String ARG_PARAM1 = "user";
+    static final String ARG_PARAM2 = "page";
+    static final String ARG_PARAM3 = "event";
+    static final String ARG_PARAM4 = "place";
+    static final String ARG_PARAM5 = "group";
 
     // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private String userParam;
+    private String pageParam;
+    private String eventParam;
+    private String placeParam;
+    private String groupParam;
 
     private OnFragmentInteractionListener mListener;
     private TabLayout tabLayout;
-    private ViewPager viewPager;
+    //private ViewPager viewPager;
 
     //private FragmentActivity myContext;
 
@@ -51,16 +55,17 @@ public class SecondFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
      * @return A new instance of fragment SecondFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static SecondFragment newInstance(String param1, String param2) {
+    public static SecondFragment newInstance(String[] param) {
         SecondFragment fragment = new SecondFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putString(ARG_PARAM1, param[0]);
+        args.putString(ARG_PARAM2, param[1]);
+        args.putString(ARG_PARAM3, param[2]);
+        args.putString(ARG_PARAM4, param[3]);
+        args.putString(ARG_PARAM5, param[4]);
         fragment.setArguments(args);
         return fragment;
     }
@@ -69,9 +74,21 @@ public class SecondFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            /*try {
+                JSONObject[] data = new JSONObject[5];
+                for (int i = 0; i < searchResults.length; i++) {
+                    data[i] = new JSONObject(searchResults[i]);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }*/
+            userParam = getArguments().getString(ARG_PARAM1);
+            pageParam = getArguments().getString(ARG_PARAM2);
+            eventParam = getArguments().getString(ARG_PARAM3);
+            placeParam = getArguments().getString(ARG_PARAM4);
+            groupParam = getArguments().getString(ARG_PARAM5);
         }
+
     }
 
     private void createTabIcons() {
@@ -93,15 +110,7 @@ public class SecondFragment extends Fragment {
 
     public static class SampleFragmentPagerAdapter extends FragmentPagerAdapter {
         final int PAGE_COUNT = 3;
-        //private String tabTitles[] = new String[] { "Tab1", "Tab2", "Tab3" };
-        //private Context context;
-        /*private int[] imageResId = {
-                R.drawable.users,
-                R.drawable.pages,
-                R.drawable.places,
-                R.drawable.events,
-                R.drawable.groups
-        };*/
+        private String tabTitles[] = new String[] { "Tab1", "Tab2", "tab3" };
 
         private final ArrayList<Fragment> mFragmentList = new ArrayList<>();
         private final ArrayList<String> mFragmentTitleList = new ArrayList<>();
@@ -118,6 +127,7 @@ public class SecondFragment extends Fragment {
 
         @Override
         public Fragment getItem(int position) {
+
             return PageFragment.newInstance(position + 1);
             //return mFragmentList.get(position);
         }
@@ -130,13 +140,13 @@ public class SecondFragment extends Fragment {
         @Override
         public CharSequence getPageTitle(int position) {
             // Generate title based on item position
-            //return tabTitles[position];
+            return tabTitles[position];
             /*Drawable image = ContextCompat.getDrawable(getActivity(), imageResId[position]);
             image.setBounds(0, 0, image.getIntrinsicWidth(), image.getIntrinsicHeight());
             SpannableString sb = new SpannableString(" ");
             ImageSpan imageSpan = new ImageSpan(image, ImageSpan.ALIGN_BOTTOM);
             sb.setSpan(imageSpan, 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);*/
-            return mFragmentTitleList.get(position);
+            //return mFragmentTitleList.get(position);
             //return sb;
         }
     }
@@ -149,12 +159,13 @@ public class SecondFragment extends Fragment {
 
         ViewPager viewPager = (ViewPager) view.findViewById(R.id.viewpager);
         FragmentManager fm = getChildFragmentManager();
-        //viewPager.setAdapter(new SampleFragmentPagerAdapter(fm));
-        SampleFragmentPagerAdapter adapter = new SampleFragmentPagerAdapter(fm);
+        viewPager.setAdapter(new SampleFragmentPagerAdapter(fm));
+        
+        /*SampleFragmentPagerAdapter adapter = new SampleFragmentPagerAdapter(fm);
         adapter.addFrag(new Fragment_One(), "Tab 1");
         adapter.addFrag(new Fragment_Two(), "Tab 2");
         adapter.addFrag(new Fragment_Three(), "Tab 3");
-        viewPager.setAdapter(adapter);
+        viewPager.setAdapter(adapter);*/
 
         // Give the TabLayout the ViewPager
         tabLayout = (TabLayout) view.findViewById(R.id.sliding_tabs);

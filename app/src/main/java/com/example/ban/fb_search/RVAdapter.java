@@ -52,7 +52,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.NumberViewHolder> 
         View view = inflater.inflate(layoutIdForListItem, viewGroup, shouldAttachToParentImmediately);
         NumberViewHolder viewHolder = new NumberViewHolder(view);
 
-        viewHolder.viewHolderIndex.setText("ViewHolder index: " + viewHolderCount);
+        //viewHolder.viewHolderIndex.setText("ViewHolder index: " + viewHolderCount);
 
         int backgroundColorForViewHolder = ColorUtils
                 .getViewHolderBackgroundColorFromInstance(context, viewHolderCount);
@@ -114,7 +114,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.NumberViewHolder> 
 
             listItemNumberView = (TextView) itemView.findViewById(R.id.tv_item_number);
 
-            viewHolderIndex = (TextView) itemView.findViewById(R.id.tv_view_holder_instance);
+            //viewHolderIndex = (TextView) itemView.findViewById(R.id.tv_view_holder_instance);
         }
 
         // COMPLETED (16) Within the NumberViewHolder class, create a void method called bind that accepts an int parameter called listIndex

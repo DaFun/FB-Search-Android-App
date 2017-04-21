@@ -19,24 +19,53 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="16dp">
-
-    <TextView
-        android:id="@+id/tv_item_number"
-        style="@style/TextAppearance.AppCompat.Title"
-        android:layout_width="wrap_content"
+    
+    <GridLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical|start"
-        android:fontFamily="monospace"
-        android:textSize="42sp"
-        tools:text="#42" />
+        android:columnCount="6">
 
-    <TextView
-        android:id="@+id/tv_view_holder_instance"
-        style="@style/TextAppearance.AppCompat.Title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical|end"
-        android:fontFamily="monospace"
-        android:textColor="#000"
-        tools:text="ViewHolder instance: 7" />
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:scaleType="fitCenter"
+            android:padding="5dp"
+            android:id="@+id/profile_img"/>
+
+        <TextView
+            android:id="@+id/tv_item_number"
+            style="@style/TextAppearance.AppCompat.Title"
+            android:layout_columnSpan="3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="fill_horizontal|center_vertical"
+            android:fontFamily="monospace"
+            android:textSize="16sp"
+            tools:text="#42" />
+
+        <!--<TextView
+            android:id="@+id/tv_view_holder_instance"
+            style="@style/TextAppearance.AppCompat.Title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|end"
+            android:fontFamily="monospace"
+            android:textColor="#000"
+            tools:text="ViewHolder instance: 7" />-->
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/favorites_off"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:id="@+id/favorite_img"/>
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/details"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:id="@+id/details_img"/>
+    </GridLayout>
+
 </FrameLayout>

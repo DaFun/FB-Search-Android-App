@@ -5,6 +5,7 @@ import android.os.Bundle;
 //import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -15,6 +16,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.inputmethod.InputMethodManager;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 /*import android.widget.EditText;
 import android.widget.TextView;
 import java.io.IOException;
@@ -25,7 +29,9 @@ import com.example.ban.fb_search.utilities.NetworkUtils;
 import java.net.URL;*/
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, FirstFragment.OnFragmentInteractionListener {
+
+    //private JSONObject[] data = new JSONObject[5];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,5 +134,20 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    public void onDataReceived(String[] searchResults) {
+        Fragment fragment = new SecondFragment();
+        Bundle args = new Bundle();
+        args.putString(SecondFragment.ARG_PARAM1, searchResults[0]);
+        args.putString(SecondFragment.ARG_PARAM2, searchResults[1]);
+        args.putString(SecondFragment.ARG_PARAM3, searchResults[2]);
+        args.putString(SecondFragment.ARG_PARAM4, searchResults[3]);
+        args.putString(SecondFragment.ARG_PARAM5, searchResults[4]);
+        fragment.setArguments(args);
 
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.flContent, fragment);
+        transaction.addToBackStack(null);
+
+        transaction.commit();
+    }
 }
