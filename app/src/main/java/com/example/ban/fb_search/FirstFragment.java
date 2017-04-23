@@ -19,8 +19,6 @@ import java.io.IOException;
 import java.net.URL;
 import android.support.v4.app.FragmentTransaction;
 
-import org.json.JSONObject;
-import org.json.JSONException;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -85,8 +83,6 @@ public class FirstFragment extends Fragment {
         URL placeUrl = NetworkUtils.buildUrl(query, "place");
         URL groupUrl = NetworkUtils.buildUrl(query, "group");
 
-
-        //mUrlDisplayTextView.setText(githubSearchUrl.toString());
         new queryTask().execute(userUrl, pageUrl, eventUrl, placeUrl, groupUrl);
     }
 
@@ -141,21 +137,15 @@ public class FirstFragment extends Fragment {
         mSearchBoxEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    hideKeyboard(v);
-                }
+            if (!hasFocus) {
+                hideKeyboard(v);
+            }
             }
         });
 
         return view;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    /*public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }*/
 
     @Override
     public void onAttach(Context context) {

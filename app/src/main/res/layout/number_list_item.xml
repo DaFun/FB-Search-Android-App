@@ -18,54 +18,52 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="16dp">
+    android:background="@drawable/gradient"
+    android:padding="10dp">
     
     <GridLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:columnCount="6">
 
         <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
             android:scaleType="fitCenter"
-            android:padding="5dp"
-            android:id="@+id/profile_img"/>
+            android:id="@+id/profile_img"
+            android:layout_column="0"/>
 
         <TextView
-            android:id="@+id/tv_item_number"
+            android:id="@+id/tv_item_name"
             style="@style/TextAppearance.AppCompat.Title"
-            android:layout_columnSpan="3"
-            android:layout_width="wrap_content"
+            android:layout_width="210dp"
             android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:layout_column="1"
+            android:layout_columnSpan="3"
             android:layout_gravity="fill_horizontal|center_vertical"
             android:fontFamily="monospace"
             android:textSize="16sp"
+            android:textStyle="bold"
             tools:text="#42" />
 
-        <!--<TextView
-            android:id="@+id/tv_view_holder_instance"
-            style="@style/TextAppearance.AppCompat.Title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|end"
-            android:fontFamily="monospace"
-            android:textColor="#000"
-            tools:text="ViewHolder instance: 7" />-->
 
         <ImageView
             android:layout_width="20dp"
             android:layout_height="20dp"
-            android:src="@drawable/favorites_off"
             android:layout_gravity="center_vertical|center_horizontal"
-            android:id="@+id/favorite_img"/>
+            android:id="@+id/favorite_img"
+            android:layout_column="4"/>
 
         <ImageView
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:src="@drawable/details"
             android:layout_gravity="center_vertical|center_horizontal"
-            android:id="@+id/details_img"/>
+            android:id="@+id/details_img"
+            android:layout_column="5"/>
     </GridLayout>
 
 </FrameLayout>

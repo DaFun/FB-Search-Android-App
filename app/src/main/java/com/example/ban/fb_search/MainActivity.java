@@ -1,8 +1,8 @@
 package com.example.ban.fb_search;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
-//import android.support.design.widget.FloatingActionButton;
-//import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -15,23 +15,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.inputmethod.InputMethodManager;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-/*import android.widget.EditText;
-import android.widget.TextView;
-import java.io.IOException;
-import android.widget.Button;
-
-import com.example.ban.fb_search.utilities.NetworkUtils;
-
-import java.net.URL;*/
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, FirstFragment.OnFragmentInteractionListener {
 
-    //private JSONObject[] data = new JSONObject[5];
+    private ActionBarDrawerToggle toggle;
+    private int fragment_id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,15 +43,14 @@ public class MainActivity extends AppCompatActivity
             fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit();
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
+        DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        toggle = new ActionBarDrawerToggle(
+                this, mDrawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        mDrawerLayout.setDrawerListener(toggle);
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
     }
 
     @Override
@@ -72,6 +60,10 @@ public class MainActivity extends AppCompatActivity
             drawer.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
+        }
+        if (fragment_id == R.id.viewpager) {
+            toggle.setDrawerIndicatorEnabled(true);
+            fragment_id = R.id.nav_first_fragment;
         }
     }
 
@@ -92,6 +84,11 @@ public class MainActivity extends AppCompatActivity
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        } else if (id == android.R.id.home) {
+            getSupportFragmentManager().popBackStack();
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+            toggle.setDrawerIndicatorEnabled(true);
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -109,12 +106,15 @@ public class MainActivity extends AppCompatActivity
         switch (id) {
             case R.id.nav_first_fragment:
                 fragmentClass = FirstFragment.class;
+                fragment_id = R.id.nav_first_fragment;
                 break;
             case R.id.nav_second_fragment:
                 fragmentClass = ItemFragment.class;
+                fragment_id = R.id.nav_second_fragment;
                 break;
             case R.id.nav_about_me:
                 fragmentClass = AboutFragment.class;
+                fragment_id = R.id.nav_about_me;
                 break;
             default:
                 fragmentClass = FirstFragment.class;
@@ -135,19 +135,13 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void onDataReceived(String[] searchResults) {
-        Fragment fragment = new SecondFragment();
-        Bundle args = new Bundle();
-        args.putString(SecondFragment.ARG_PARAM1, searchResults[0]);
-        args.putString(SecondFragment.ARG_PARAM2, searchResults[1]);
-        args.putString(SecondFragment.ARG_PARAM3, searchResults[2]);
-        args.putString(SecondFragment.ARG_PARAM4, searchResults[3]);
-        args.putString(SecondFragment.ARG_PARAM5, searchResults[4]);
-        fragment.setArguments(args);
+        Context context = MainActivity.this;
 
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.flContent, fragment);
-        transaction.addToBackStack(null);
+        Class destinationActivity = ChildActivity.class;
 
-        transaction.commit();
+        Intent startChildActivityIntent = new Intent(context, destinationActivity);
+        startChildActivityIntent.putExtra(Intent.EXTRA_TEXT, searchResults);
+
+        startActivity(startChildActivityIntent);
     }
 }
