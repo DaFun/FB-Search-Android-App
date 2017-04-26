@@ -2,14 +2,11 @@ package com.example.ban.fb_search;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.widget.ArrayAdapter;
 import android.content.Context;
 
-import java.io.InputStream;
-import java.net.HttpURLConnection;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -18,10 +15,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.LayoutInflater;
 import android.widget.ImageView;
-import android.widget.ShareActionProvider;
 import android.widget.TextView;
-import android.content.SharedPreferences;
+import com.example.ban.fb_search.utilities.NetworkUtils;
+import com.example.ban.fb_search.utilities.ImageLoader;
 import java.util.Set;
+
 
 /**
  * Created by Ban on 4/22/2017.
@@ -35,7 +33,8 @@ public class ProfileArrayAdapter extends ArrayAdapter<ProfileItem> {
     SharedPreferences sharedPreferencesType;
     private String mType;
 
-    public ProfileArrayAdapter(Context context, int layout, ArrayList<ProfileItem> items, String t, SharedPreferences id, SharedPreferences type) {
+    public ProfileArrayAdapter(Context context, int layout, ArrayList<ProfileItem> items,
+                               String t, SharedPreferences id, SharedPreferences type) {
         super(context, layout, items);
         this.layoutResourceId = layout;
         this.context = context;
@@ -72,7 +71,7 @@ public class ProfileArrayAdapter extends ArrayAdapter<ProfileItem> {
 
     private void setupItem(final ProfileItemHolder holder) {
         holder.name.setText(holder.ProfileItem.name);
-        new ImageLoadTask(holder.ProfileItem.url, holder.photo).execute();
+        new ImageLoader(holder.ProfileItem.url, holder.photo).execute();
 
         if (holder.ProfileItem.favorite) {
             holder.favorite.setImageResource(R.drawable.favorites_on);
@@ -120,15 +119,9 @@ public class ProfileArrayAdapter extends ArrayAdapter<ProfileItem> {
         holder.details.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int position = (Integer) view.getTag();
-                Context context = getContext();
-
-                Class destinationActivity = DetailActivity.class;
-
-                Intent startDetailActivityIntent = new Intent(context, destinationActivity);
-                startDetailActivityIntent.putExtra(Intent.EXTRA_TEXT, holder.ProfileItem.data);
-
-                getContext().startActivity(startDetailActivityIntent);
+            int position = (Integer) view.getTag();
+            String[] bundle = {holder.ProfileItem.id, holder.ProfileItem.name, holder.ProfileItem.url};
+            makeSearchQuery(bundle);
             }
         });
     }
@@ -141,38 +134,44 @@ public class ProfileArrayAdapter extends ArrayAdapter<ProfileItem> {
         ImageView details;
     }
 
-    public class ImageLoadTask extends AsyncTask<Void, Void, Bitmap> {
-
-        private String url;
-        private ImageView imageView;
-
-        public ImageLoadTask(String url, ImageView imageView) {
-            this.url = url;
-            this.imageView = imageView;
-        }
-
-        @Override
-        protected Bitmap doInBackground(Void... params) {
-            try {
-                URL urlConnection = new URL(url);
-                HttpURLConnection connection = (HttpURLConnection) urlConnection
-                        .openConnection();
-                connection.setDoInput(true);
-                connection.connect();
-                InputStream input = connection.getInputStream();
-                Bitmap myBitmap = BitmapFactory.decodeStream(input);
-                return myBitmap;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Bitmap result) {
-            super.onPostExecute(result);
-            imageView.setImageBitmap(result);
-        }
+    private void makeSearchQuery(String[] bundle) {
+        URL idUrl = NetworkUtils.buildUrl(bundle[0], "id", null, null);
+        new queryTask(bundle).execute(idUrl);
     }
 
+    public class queryTask extends AsyncTask<URL, Void, String> {
+
+        private String[] bundle;
+
+        public queryTask(String[] bundle) {
+            this.bundle = bundle;
+        }
+
+        @Override
+        protected String doInBackground(URL... urls) {
+            String searchResults = new String();
+            try {
+                searchResults = NetworkUtils.getResponseFromHttpUrl(urls[0]);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return searchResults;
+        }
+
+        @Override
+        protected void onPostExecute(String searchResults) {
+
+            //mSearchResultsTextView.setText(searchResults[0]);
+            //mListener.onDataReceived(searchResults);
+            String[] tmp = {searchResults, bundle[1], bundle[2]};
+
+            Context context = getContext();
+            Class destinationActivity = DetailActivity.class;
+
+            Intent startDetailActivityIntent = new Intent(context, destinationActivity);
+            startDetailActivityIntent.putExtra(Intent.EXTRA_TEXT, tmp);
+            context.startActivity(startDetailActivityIntent);
+
+        }
+    }
 }

@@ -7,8 +7,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.Button;
 import android.widget.ListView;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -29,6 +28,16 @@ public class PageFragment extends Fragment {
     SharedPreferences sharedPreferencesId;
     SharedPreferences sharedPreferencesType;
     private String mType;
+
+    private String mPrevious;
+    private boolean mDisable_prev;
+    private String mNext;
+    private boolean mDisable_next;
+
+    private OnFragmentInteractionListener mListener;
+
+    private Button previous;
+    private Button next;
 
     public static PageFragment newInstance(String data, int index) {
         Bundle args = new Bundle();
@@ -77,16 +86,26 @@ public class PageFragment extends Fragment {
         ListView profileListView = (ListView) view.findViewById(R.id.rv_numbers);
         profileListView.setAdapter(adapter);
 
-        /*mRecordList = (RecyclerView) view.findViewById(R.id.rv_numbers);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
-        mRecordList.setLayoutManager(layoutManager);
-        mRecordList.setHasFixedSize(true);
-        mRecordList.setItemViewCacheSize(20);
-        mRecordList.setDrawingCacheEnabled(true);
-        mRecordList.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
-        mAdapter = new RVAdapter(mPage, getActivity());
+        previous = (Button) view.findViewById(R.id.bt_previous);
+        next = (Button) view.findViewById(R.id.bt_next);
+        parsePagination(mPage);
 
-        mRecordList.setAdapter(mAdapter);*/
+        previous.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                if (!mDisable_prev) {
+                    mListener.onDataReceived(mPrevious);
+                }
+            }
+        });
+
+        next.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                if (!mDisable_next) {
+                    mListener.onDataReceived(mNext);
+                }
+            }
+        });
+
         return view;
     }
 
@@ -111,5 +130,51 @@ public class PageFragment extends Fragment {
         return new ArrayList<>();
     }
 
+    public void parsePagination(String data) {
+        try {
+            JSONObject obj = new JSONObject(data);
+            JSONObject page = obj.getJSONObject("paging");
+            if (page.has("previous")) {
+                previous.setEnabled(true);
+                mPrevious = page.getString("previous");
+                mDisable_prev = false;
+            } else {
+                previous.setEnabled(false);
+                mDisable_prev = true;
+            }
+            if (page.has("next")) {
+                next.setEnabled(true);
+                mNext = page.getString("next");
+                mDisable_next = false;
+            } else {
+                next.setEnabled(false);
+                mDisable_next = true;
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnFragmentInteractionListener) {
+            mListener = (OnFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+    }
+
+    public interface OnFragmentInteractionListener {
+        public void onDataReceived(String data);
+    }
+
+    public String getTitle() {
+        return mPage;
+    }
+
+    public void setTitle(String title) {
+        mPage = title;
+    }
 }

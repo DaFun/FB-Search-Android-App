@@ -3,27 +3,38 @@ package com.example.ban.fb_search;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ImageSpan;
 import android.view.LayoutInflater;
-import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.example.ban.fb_search.utilities.NetworkUtils;
 
-public class ChildActivity extends AppCompatActivity {
+import java.io.IOException;
+import java.net.URL;
+import java.util.List;
+
+public class ChildActivity extends AppCompatActivity
+        implements PageFragment.OnFragmentInteractionListener {
 
     private TabLayout tabLayout;
     private String[] dataParam;
-    private Toast mToast;
+    private int mPosition;
+    private ViewPager viewPager;
+    private FragmentManager fm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,14 +43,16 @@ public class ChildActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
-        FragmentManager fm = getSupportFragmentManager();
-        viewPager.setAdapter(new SampleFragmentPagerAdapter(fm));
+        // Enable the Up button
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        viewPager = (ViewPager) findViewById(R.id.viewpager);
+        fm = getSupportFragmentManager();
+        viewPager.setAdapter(new SampleFragmentPagerAdapter(fm, ChildActivity.this));
 
         // Give the TabLayout the ViewPager
         tabLayout = (TabLayout) findViewById(R.id.sliding_tabs);
         tabLayout.setupWithViewPager(viewPager);
-        createTabIcons();
 
         Intent intentThatStartedThisActivity = getIntent();
         if (intentThatStartedThisActivity.hasExtra(Intent.EXTRA_TEXT)) {
@@ -48,13 +61,22 @@ public class ChildActivity extends AppCompatActivity {
     }
 
     public class SampleFragmentPagerAdapter extends FragmentPagerAdapter {
-        final int PAGE_COUNT = 3;
-        private String tabTitles[] = new String[] { "Tab1", "Tab2", "tab3" };
+        final int PAGE_COUNT = 5;
+        private Context context;
+        private int[] imageResId = {
+                R.drawable.users,
+                R.drawable.pages,
+                R.drawable.events,
+                R.drawable.places,
+                R.drawable.groups
+        };
+
+        private String[] textResId = {"UUsers", "EPages", "EEvents", "EPlaces", "EGroups"};
 
 
-        public SampleFragmentPagerAdapter(FragmentManager fm) {
+        public SampleFragmentPagerAdapter(FragmentManager fm, Context context) {
             super(fm);
-            //this.context = context;
+            this.context = context;
         }
 
         @Override
@@ -64,44 +86,87 @@ public class ChildActivity extends AppCompatActivity {
 
         @Override
         public Fragment getItem(int position) {
-            return PageFragment.newInstance(dataParam[position], position);
+            //mPosition = position;
+            PageFragment fragment = PageFragment.newInstance(dataParam[position], position);
+            fragment.setTitle(dataParam[position]);
+            return fragment;
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
             // Generate title based on item position
-            return tabTitles[position];
+            Drawable image = ContextCompat.getDrawable(context, imageResId[position]);
+            image.setBounds(0, 0, image.getIntrinsicWidth(), image.getIntrinsicHeight());
+            SpannableString sb = new SpannableString(textResId[position]);
+            ImageSpan imageSpan = new ImageSpan(image, ImageSpan.ALIGN_BOTTOM);
+            sb.setSpan(imageSpan, 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            return sb;
+        }
+
+        @Override
+        public int getItemPosition(Object item) {
+            PageFragment fragment = (PageFragment) item;
+            String title = fragment.getTitle();
+            int position = java.util.Arrays.asList(dataParam).indexOf(title);
+
+            if (position >= 0) {
+                return position;
+            } else {
+                return POSITION_NONE;
+            }
+        }
+
+        @Override
+        public Object instantiateItem(ViewGroup container, int position) {
+            List<Fragment> fragmentsList = fm.getFragments();
+            if (fragmentsList != null && position <= (fragmentsList.size() - 1)) {
+                PageFragment sampleFragment = (PageFragment) fragmentsList.get(position);
+                String tmp = dataParam[position];
+                //If the current data of the fragment changed, set the new data
+                if (!tmp.equals(sampleFragment.getTitle())) {
+                    sampleFragment.setTitle(tmp);
+                    //Log.i(TAG, "********instantiateItem position:" + position + " FragmentDataChanged");
+                }
+            } else {
+                //No fragment instance available for this index, create a new fragment by calling getItem() and show the data.
+                //Log.i(TAG, "********instantiateItem position:" + position + " NewFragmentCreated");
+            }
+
+            return super.instantiateItem(container, position);
         }
     }
 
-    private void createTabIcons() {
-        TextView tabOne = (TextView) LayoutInflater.from(this).inflate(R.layout.custom_tab, null);
-        tabOne.setText("Tab 1");
-        tabOne.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.users, 0, 0);
-        tabLayout.getTabAt(0).setCustomView(tabOne);
-
-        TextView tabTwo = (TextView) LayoutInflater.from(this).inflate(R.layout.custom_tab, null);
-        tabTwo.setText("Tab 2");
-        tabTwo.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.pages, 0, 0);
-        tabLayout.getTabAt(1).setCustomView(tabTwo);
-
-        TextView tabThree = (TextView) LayoutInflater.from(this).inflate(R.layout.custom_tab, null);
-        tabThree.setText("Tab 3");
-        tabThree.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.events, 0, 0);
-        tabLayout.getTabAt(2).setCustomView(tabThree);
+    public void onDataReceived(String page) {
+        makeSearchQuery(page);
     }
 
-    /*@Override
-    public void onListItemClick(int clickedItemIndex) {
+    private void makeSearchQuery(String query) {
+        URL userUrl = NetworkUtils.buildUrl(query, "link", null, null);
+        new queryTask().execute(userUrl);
+    }
 
-        if (mToast != null) {
-            mToast.cancel();
+    public class queryTask extends AsyncTask<URL, Void, String> {
+
+        @Override
+        protected String doInBackground(URL... urls) {
+            //URL searchUrl = urls[0];
+            String searchResults = new String();
+            try {
+                searchResults = NetworkUtils.getResponseFromHttpUrl(urls[0]);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return searchResults;
         }
 
-        String toastMessage = "Item #" + clickedItemIndex + " clicked.";
-        mToast = Toast.makeText(this, toastMessage, Toast.LENGTH_LONG);
-
-        mToast.show();
-    }*/
-
+        @Override
+        protected void onPostExecute(String searchResults) {
+            if (searchResults != null && !searchResults.equals("")) {
+                //mSearchResultsTextView.setText(searchResults[0]);
+                int pos = viewPager.getCurrentItem();
+                dataParam[pos] = searchResults;
+                viewPager.getAdapter().notifyDataSetChanged();
+            }
+        }
+    }
 }

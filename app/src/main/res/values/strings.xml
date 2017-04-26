@@ -11,4 +11,8 @@
     <string name="title_activity_child">ChildActivity</string>
     <string name="profile_id">profile_id</string>
     <string name="title_activity_detail">DetailActivity</string>
+    <string name="title_activity_detail_tab">DetailTabActivity</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="no_albums">No albums available to display</string>
+    <string name="no_posts">No posts available to display</string>
 </resources>

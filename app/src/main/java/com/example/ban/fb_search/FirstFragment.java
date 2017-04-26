@@ -3,21 +3,13 @@ package com.example.ban.fb_search;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.os.AsyncTask;
 import android.view.inputmethod.InputMethodManager;
-
-import com.example.ban.fb_search.utilities.NetworkUtils;
-
-import java.io.IOException;
-import java.net.URL;
-import android.support.v4.app.FragmentTransaction;
 
 
 /**
@@ -29,14 +21,12 @@ import android.support.v4.app.FragmentTransaction;
  * create an instance of this fragment.
  */
 public class FirstFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private static final String ARG_PARAM1 = "lat";
+    private static final String ARG_PARAM2 = "lon";
+
+    private String mLat;
+    private String mLon;
 
     private EditText mSearchBoxEditText;
     private TextView mSearchResultsTextView;
@@ -69,49 +59,10 @@ public class FirstFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            mLat = getArguments().getString(ARG_PARAM1);
+            mLon = getArguments().getString(ARG_PARAM2);
         }
 
-    }
-
-    private void makeSearchQuery() {
-        String query = mSearchBoxEditText.getText().toString();
-        URL userUrl = NetworkUtils.buildUrl(query, "user");
-        URL pageUrl = NetworkUtils.buildUrl(query, "page");
-        URL eventUrl = NetworkUtils.buildUrl(query, "event");
-        URL placeUrl = NetworkUtils.buildUrl(query, "place");
-        URL groupUrl = NetworkUtils.buildUrl(query, "group");
-
-        new queryTask().execute(userUrl, pageUrl, eventUrl, placeUrl, groupUrl);
-    }
-
-    public class queryTask extends AsyncTask<URL, Void, String[]> {
-
-        @Override
-        protected String[] doInBackground(URL... urls) {
-            //URL searchUrl = urls[0];
-            String[] searchResults = new String[5];
-            try {
-                searchResults[0] = NetworkUtils.getResponseFromHttpUrl(urls[0]);
-                searchResults[1] = NetworkUtils.getResponseFromHttpUrl(urls[1]);
-                searchResults[2] = NetworkUtils.getResponseFromHttpUrl(urls[2]);
-                searchResults[3] = NetworkUtils.getResponseFromHttpUrl(urls[3]);
-                searchResults[4] = NetworkUtils.getResponseFromHttpUrl(urls[4]);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return searchResults;
-        }
-
-        @Override
-        protected void onPostExecute(String[] searchResults) {
-            if (searchResults != null && !searchResults.equals("")) {
-                mSearchResultsTextView.setText(searchResults[0]);
-
-                mListener.onDataReceived(searchResults);
-            }
-        }
     }
 
     public void hideKeyboard(View view) {
@@ -125,12 +76,13 @@ public class FirstFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_first, container, false);
         mSearchBoxEditText = (EditText) view.findViewById(R.id.et_search_box);
-        mSearchResultsTextView = (TextView) view.findViewById(R.id.tv_github_search_results_json);
+        //mSearchResultsTextView = (TextView) view.findViewById(R.id.tv_github_search_results_json);
 
         final Button button = (Button) view.findViewById(R.id.bt_search);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                makeSearchQuery();
+                String query = mSearchBoxEditText.getText().toString();
+                mListener.onDataReceived(query);
             }
         });
 
@@ -175,7 +127,6 @@ public class FirstFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        public void onDataReceived(String[] data);
+        public void onDataReceived(String data);
     }
 }

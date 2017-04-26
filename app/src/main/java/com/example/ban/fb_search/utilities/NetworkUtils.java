@@ -33,13 +33,10 @@ public class NetworkUtils {
             "http://sample-env.bcz3r45x9e.us-west-2.elasticbeanstalk.com";
 
     final static String PARAM_QUERY = "q";
-
-    /*
-     * The sort field. One of stars, forks, or updated.
-     * Default: results are sorted by best match if no field is specified.
-     */
     final static String PARAM_TYPE = "type";
-    //final static String sortBy = "stars";
+    final static String PARAM_ID = "id";
+    final static String FB = "https://graph.facebook.com/v2.8/";
+    final static String TOKEN = "EAADstsKuf0MBAO67Hm3DRV5bUx34NzfZAcrSPXid0Eky1ZAMin7YoamWnusmRj7mxF7Ns3J8Au1qNL11iDQCx7Fp4RFZADbXskaszqwCTXwmMQoIpO74FlODxtKPviXbUxHxKMnaJts0wihu8XKoj1bxlgjQfkZD";
 
     /**
      * Builds the URL used to query Github.
@@ -48,12 +45,33 @@ public class NetworkUtils {
      * @param type 1 of 5 types.
      * @return The URL to use to query the weather server.
      */
-    public static URL buildUrl(String searchQuery, String type) {
-        // COMPLETED (1) Fill in this method to build the proper Github query URL
-        Uri builtUri = Uri.parse(SERVER_URL).buildUpon()
-                .appendQueryParameter(PARAM_QUERY, searchQuery)
-                .appendQueryParameter(PARAM_TYPE, type)
-                .build();
+    public static URL buildUrl(String searchQuery, String type, String lat, String lon) {
+        Uri builtUri;
+        switch (type) {
+            case "place":
+                builtUri = Uri.parse(SERVER_URL).buildUpon()
+                        .appendQueryParameter(PARAM_QUERY, searchQuery)
+                        .appendQueryParameter(PARAM_TYPE, type)
+                        .appendQueryParameter("lat", lat)
+                        .appendQueryParameter("lon", lon)
+                        .build();
+                break;
+            case "id":
+                builtUri = Uri.parse(SERVER_URL).buildUpon()
+                        .appendQueryParameter(PARAM_ID, searchQuery)
+                        .build();
+                break;
+            case "link":
+                builtUri = Uri.parse(SERVER_URL).buildUpon()
+                        .appendQueryParameter("link", searchQuery)
+                        .build();
+                break;
+            default:
+                builtUri = Uri.parse(SERVER_URL).buildUpon()
+                        .appendQueryParameter(PARAM_QUERY, searchQuery)
+                        .appendQueryParameter(PARAM_TYPE, type)
+                        .build();
+        }
 
         URL url = null;
         try {
