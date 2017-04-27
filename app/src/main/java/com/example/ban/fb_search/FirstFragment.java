@@ -8,8 +8,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Toast;
 
 
 /**
@@ -29,7 +31,7 @@ public class FirstFragment extends Fragment {
     private String mLon;
 
     private EditText mSearchBoxEditText;
-    private TextView mSearchResultsTextView;
+    private ProgressBar mLoadingIndicator;
 
     private OnFragmentInteractionListener mListener;
 
@@ -76,13 +78,24 @@ public class FirstFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_first, container, false);
         mSearchBoxEditText = (EditText) view.findViewById(R.id.et_search_box);
-        //mSearchResultsTextView = (TextView) view.findViewById(R.id.tv_github_search_results_json);
+        mLoadingIndicator = (ProgressBar) view.findViewById(R.id.pb_loading_indicator);
 
         final Button button = (Button) view.findViewById(R.id.bt_search);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 String query = mSearchBoxEditText.getText().toString();
-                mListener.onDataReceived(query);
+                if (query == null || query.equals("")) {
+                    Toast.makeText(getActivity(), "Please input keywords", Toast.LENGTH_SHORT).show();
+                } else {
+                    mListener.onDataReceived(query, mLoadingIndicator);
+                }
+            }
+        });
+
+        final Button button_cl = (Button) view.findViewById(R.id.bt_clear);
+        button_cl.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                mSearchBoxEditText.setText("");
             }
         });
 
@@ -127,6 +140,6 @@ public class FirstFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        public void onDataReceived(String data);
+        public void onDataReceived(String data, ProgressBar mLoadingIndicator);
     }
 }

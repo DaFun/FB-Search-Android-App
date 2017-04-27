@@ -33,10 +33,13 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import android.location.Location;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
@@ -47,6 +50,7 @@ public class MainActivity extends AppCompatActivity
     private int fragment_id;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
+    private ProgressBar mLoadingIndicator;
 
     public static final String TAG = MainActivity.class.getSimpleName();
 
@@ -111,7 +115,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
+        //getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
@@ -150,7 +154,7 @@ public class MainActivity extends AppCompatActivity
                 fragment_id = R.id.nav_first_fragment;
                 break;
             case R.id.nav_second_fragment:
-                fragmentClass = ItemFragment.class;
+                fragmentClass = SecondFragment.class;
                 fragment_id = R.id.nav_second_fragment;
                 break;
             case R.id.nav_about_me:
@@ -175,7 +179,8 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    public void onDataReceived(String query) {
+    public void onDataReceived(String query, ProgressBar loadingIndicator) {
+        mLoadingIndicator = loadingIndicator;
         makeSearchQuery(query);
     }
 
@@ -190,6 +195,12 @@ public class MainActivity extends AppCompatActivity
     }
 
     public class queryTask extends AsyncTask<URL, Void, String[]> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mLoadingIndicator.setVisibility(View.VISIBLE);
+        }
 
         @Override
         protected String[] doInBackground(URL... urls) {
@@ -209,14 +220,19 @@ public class MainActivity extends AppCompatActivity
 
         @Override
         protected void onPostExecute(String[] searchResults) {
+            mLoadingIndicator.setVisibility(View.INVISIBLE);
             if (searchResults != null && !searchResults.equals("")) {
                 //mSearchResultsTextView.setText(searchResults[0]);
                 Context context = MainActivity.this;
 
-                Class destinationActivity = ChildActivity.class;
+                ArrayList<String> sendData = new ArrayList<String>(Arrays.asList(searchResults));
+                sendData.add("first");
+                sendData.add("0");
+                String[] arr = sendData.toArray(new String[sendData.size()]);
 
+                Class destinationActivity = ChildActivity.class;
                 Intent startChildActivityIntent = new Intent(context, destinationActivity);
-                startChildActivityIntent.putExtra(Intent.EXTRA_TEXT, searchResults);
+                startChildActivityIntent.putExtra(Intent.EXTRA_TEXT, arr);
 
                 startActivity(startChildActivityIntent);
             }

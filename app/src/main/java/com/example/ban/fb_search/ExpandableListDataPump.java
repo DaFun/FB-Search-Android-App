@@ -26,12 +26,16 @@ public class ExpandableListDataPump {
                 for (int i = 0; i < albums.length(); i++) {
                     JSONObject tmp = albums.getJSONObject(i);
                     String name = tmp.getString("name");
-                    JSONArray photoIds = tmp.getJSONObject("photos").getJSONArray("data");
-                    List<String> list = new ArrayList<String>();
-                    for (int j = 0; j < photoIds.length(); j++) {
-                        list.add(buildUrl(photoIds.getJSONObject(j).getString("id")));
+                    if (tmp.has("photos")) {
+                        JSONArray photoIds = tmp.getJSONObject("photos").getJSONArray("data");
+                        List<String> list = new ArrayList<String>();
+                        for (int j = 0; j < photoIds.length(); j++) {
+                            list.add(buildUrl(photoIds.getJSONObject(j).getString("id")));
+                        }
+                        expandableListDetail.put(name, list);
+                    } else {
+                        expandableListDetail.put(name, new ArrayList<String>());
                     }
-                    expandableListDetail.put(name, list);
                 }
             }
         } catch (JSONException e) {

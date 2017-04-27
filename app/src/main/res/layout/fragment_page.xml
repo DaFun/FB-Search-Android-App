@@ -7,17 +7,21 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="463dp">
+        android:layout_height="match_parent"
+        android:layout_weight="9">
         <ListView
             android:id="@+id/rv_numbers"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
     </FrameLayout>
 
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom">
+        android:id="@+id/bottom_bt"
+        android:layout_gravity="bottom"
+        android:layout_weight="1">
 
         <Button
             android:layout_width="0dp"

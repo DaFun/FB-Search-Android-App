@@ -8,15 +8,13 @@ public class ProfileItem {
     public String name;
     public String url;
     public boolean favorite;
-    public int index;
     public String id;
     public String data;
 
-    public ProfileItem(String name, String url, boolean favorite, int index, String id, String data) {
+    public ProfileItem(String name, String url, boolean favorite, String id, String data) {
         this.name = name;
         this.url = url;
         this.favorite = favorite;
-        this.index = index;
         this.id = id;
         this.data = data;
     }

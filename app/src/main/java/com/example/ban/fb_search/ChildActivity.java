@@ -32,7 +32,6 @@ public class ChildActivity extends AppCompatActivity
 
     private TabLayout tabLayout;
     private String[] dataParam;
-    private int mPosition;
     private ViewPager viewPager;
     private FragmentManager fm;
 
@@ -58,6 +57,10 @@ public class ChildActivity extends AppCompatActivity
         if (intentThatStartedThisActivity.hasExtra(Intent.EXTRA_TEXT)) {
             dataParam = intentThatStartedThisActivity.getStringArrayExtra(Intent.EXTRA_TEXT);
         }
+
+        //viewPager.setCurrentItem(Integer.parseInt(dataParam[6]));
+        //TabLayout.Tab tab = tabLayout.getTabAt(Integer.parseInt(dataParam[6]));
+        //tab.select();
     }
 
     public class SampleFragmentPagerAdapter extends FragmentPagerAdapter {
@@ -87,7 +90,7 @@ public class ChildActivity extends AppCompatActivity
         @Override
         public Fragment getItem(int position) {
             //mPosition = position;
-            PageFragment fragment = PageFragment.newInstance(dataParam[position], position);
+            PageFragment fragment = PageFragment.newInstance(dataParam[position], position, dataParam[dataParam.length-2], dataParam);
             fragment.setTitle(dataParam[position]);
             return fragment;
         }
@@ -123,9 +126,11 @@ public class ChildActivity extends AppCompatActivity
                 PageFragment sampleFragment = (PageFragment) fragmentsList.get(position);
                 String tmp = dataParam[position];
                 //If the current data of the fragment changed, set the new data
-                if (!tmp.equals(sampleFragment.getTitle())) {
+                if (tmp != null && !tmp.equals(sampleFragment.getTitle())) {
                     sampleFragment.setTitle(tmp);
                     //Log.i(TAG, "********instantiateItem position:" + position + " FragmentDataChanged");
+                } else {
+
                 }
             } else {
                 //No fragment instance available for this index, create a new fragment by calling getItem() and show the data.

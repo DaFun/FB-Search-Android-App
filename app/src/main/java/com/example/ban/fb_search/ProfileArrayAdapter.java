@@ -32,9 +32,10 @@ public class ProfileArrayAdapter extends ArrayAdapter<ProfileItem> {
     SharedPreferences sharedPreferencesId;
     SharedPreferences sharedPreferencesType;
     private String mType;
+    private String[] mArray;
 
     public ProfileArrayAdapter(Context context, int layout, ArrayList<ProfileItem> items,
-                               String t, SharedPreferences id, SharedPreferences type) {
+                               String t, SharedPreferences id, SharedPreferences type, String[] array) {
         super(context, layout, items);
         this.layoutResourceId = layout;
         this.context = context;
@@ -42,6 +43,7 @@ public class ProfileArrayAdapter extends ArrayAdapter<ProfileItem> {
         this.sharedPreferencesId = id;
         this.sharedPreferencesType = type;
         mType = t;
+        mArray = array;
     }
 
     @Override
@@ -120,7 +122,8 @@ public class ProfileArrayAdapter extends ArrayAdapter<ProfileItem> {
             @Override
             public void onClick(View view) {
             int position = (Integer) view.getTag();
-            String[] bundle = {holder.ProfileItem.id, holder.ProfileItem.name, holder.ProfileItem.url};
+            String[] bundle = {holder.ProfileItem.id, holder.ProfileItem.name,
+                    holder.ProfileItem.url, holder.ProfileItem.data};
             makeSearchQuery(bundle);
             }
         });
@@ -161,9 +164,11 @@ public class ProfileArrayAdapter extends ArrayAdapter<ProfileItem> {
         @Override
         protected void onPostExecute(String searchResults) {
 
-            //mSearchResultsTextView.setText(searchResults[0]);
-            //mListener.onDataReceived(searchResults);
-            String[] tmp = {searchResults, bundle[1], bundle[2]};
+            String favorite = sharedPreferencesId.contains(bundle[0]) ? "true" : "false";
+
+            //name, url, id, data
+            String[] tmp = {searchResults, bundle[1], bundle[2], bundle[0], bundle[3], mType,
+                    mArray[0], mArray[1], mArray[2], mArray[3], mArray[4], mArray[5], favorite};
 
             Context context = getContext();
             Class destinationActivity = DetailActivity.class;
